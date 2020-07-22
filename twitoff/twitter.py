@@ -1,14 +1,16 @@
 """Retrieve Tweets, embeddings, and persist in the database."""
+from os import getenv
 import basilica
 import tweepy
 from .models import DB, Tweet, User
-from os import getenv
+
 # https://greatist.com/happiness/must-follow-twitter-accounts
 TWITTER_USERS = ['calebhicks', 'elonmusk', 'rrherr', 'SteveMartinToGo',
                  'alyankovic', 'nasa', 'sadserver', 'jkhowland', 'austen',
                  'common_squirrel', 'KenJennings', 'conanobrien',
                  'big_ben_clock', 'IAM_SHAKESPEARE']
 
+# TODO don't check this in! Use environment variables
 TWITTER_AUTH = tweepy.OAuthHandler(
     getenv('TWITTER_API_KEY'),
     getenv('TWITTER_API_KEY_SECRET')
@@ -32,7 +34,7 @@ def add_or_update_user(username):
         if tweets:
             db_user.newest_tweet_id = tweets[0].id
         for tweet in tweets:
-            embedding = BASILICA.embed_Sentence(tweet.full_text,
+            embedding = BASILICA.embed_sentence(tweet.full_text,
                                                 model='twitter')
             db_tweet = Tweet(id=tweet.id, text=tweet.full_text[:300],
                              embedding=embedding)
